@@ -19,11 +19,10 @@ public class OutsideObstacle extends GraphicsObject {
     public int getSize() {
         return theSize;
     }
-    public int getSizeForDrawing() {return theSize + ball.getSize();}
     @Override
     public void draw(Graphics g) {
         g.setColor(color);
-        g.drawOval((int) x-getSizeForDrawing(),(int) y-getSizeForDrawing(),getSizeForDrawing()*2,getSizeForDrawing()*2);
+        g.drawOval((int) x-getSize(),(int) y-getSize(),getSize()*2,getSize()*2);
     }
 
     @Override
@@ -31,7 +30,7 @@ public class OutsideObstacle extends GraphicsObject {
         updateVelocityOfBall();
     }
     private void updateVelocityOfBall() {
-        if(!(getLocation().distance(ball.getLocation())>(getSize()+ball.getSize()))) {
+        if((getLocation().distance(ball.getLocation())<(getSize()-ball.getSize()))) {
             return;
         }
 
@@ -39,7 +38,7 @@ public class OutsideObstacle extends GraphicsObject {
         Point2D.Double direction = new Point2D.Double(ball.x-getLocation().x,ball.y-getLocation().y);
 
         direction = new Point2D.Double(direction.x/distance, direction.y/distance);
-        double secondDistance =  getLocation().distance(ball.getLocation())-getSize()-ball.getSize();
+        double secondDistance =  getLocation().distance(ball.getLocation())-getSize()+ball.getSize();
         direction = new Point2D.Double( (direction.x*secondDistance*change), (direction.y*secondDistance*change));
         ball.xVelocity += direction.x;
         ball.yVelocity += direction.y;

@@ -48,7 +48,7 @@ public class PongPanel extends JPanel implements Runnable {
     }  // end of initKeyListener()
 
     public void initPaddlesAndGoal(int pWidth, int pHeight, Ball ball) {
-        paddleAndBall.add(new OutsideObstacle(ball, pWidth/2, pHeight/2 , -1.1, Color.BLACK, pHeight/2-ball.getSize()));
+        paddleAndBall.add(new OutsideObstacle(ball, pWidth/2, pHeight/2 , -1.1, Color.BLACK, pHeight/2));
         ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment();
         Controller[] ca = ce.getControllers();
         if (ca.length == 0) {
