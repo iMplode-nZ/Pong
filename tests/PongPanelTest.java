@@ -1,12 +1,14 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
+
 class PongPanelTest {
 
     @Test
     public void paddleIntersectionTest() {
         Ball thisBall = new Ball(4000,1000);
-        Paddle thisPaddle = new Paddle(new FakeMouse(),true,4000,1000, thisBall);
+        Paddle thisPaddle = new Paddle(new FakeMouse(), Color.blue,4000,1000, thisBall);
         thisBall.x= 35 + (int) thisPaddle.getLocation().getX();
         thisBall.y = (int) thisPaddle.getLocation().getY();
         thisBall.xVelocity = 0;
@@ -18,8 +20,8 @@ class PongPanelTest {
     }
     @Test
     public void diagonalTest() {
-        Ball thisBall = new Ball(4000,1000);
-        Paddle thisPaddle = new Paddle(new FakeMouse(),true,4000,1000, thisBall);
+        Ball thisBall = new Ball(2000,500);
+        Paddle thisPaddle = new Paddle(new FakeMouse(),Color.green,4000,1000, thisBall);
         thisBall.x= 25 + (int) thisPaddle.getLocation().getX();
         thisBall.y = 25 + (int) thisPaddle.getLocation().getY();
         thisBall.xVelocity = 0;

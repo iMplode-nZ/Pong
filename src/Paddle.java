@@ -13,33 +13,17 @@ public class Paddle extends GraphicsObject {
     private double earX;
     private double earY;
     Ball ball;
-    boolean isLeft;
-    private int pWidth, pHeight;
-    public Paddle(MouseInterface mc, boolean isLeftPaddle, int pWidth, int pHeight, Ball ball)
+    Color thisColor;
+    public Paddle(MouseInterface mc, Color whichColor, double xPos, double yPos, Ball ball)
     {
         mouseCtrl = mc;
-        System.out.print( (isLeftPaddle ? "Left " : "Right "));
-
-        this.pWidth = pWidth;
-        this.pHeight = pHeight;
-
-        // initialize finger tip images
-
-
-        if (!isLeftPaddle) {
-
-            x = pWidth / 2 + getSize() / 2 + 400;
-            y = pHeight / 2;
-        }
-        else { // right tip
-            x = pWidth / 2 -getSize() / 2 - 400;
-            y=pHeight / 2;
-        }
+        x = xPos;
+        y = yPos;
         earX=x;
         earY=y;
 
         this.ball = ball;
-        isLeft = isLeftPaddle;
+        thisColor = whichColor;
     }  // end of FingerTipController()
     public int getSize() {
         return 50;
@@ -70,11 +54,9 @@ public class Paddle extends GraphicsObject {
 
         double xNew = x + mouseCtrl.getXPollData();
 
-        xNew = ModUtils.mod(xNew,pWidth);
 
         double yNew = y + mouseCtrl.getYPollData();
 
-        yNew = ModUtils.mod(yNew,pHeight);
 
         x=xNew;
         y=yNew;
@@ -100,7 +82,7 @@ public class Paddle extends GraphicsObject {
     public void draw(Graphics g)
     {
 
-        g.setColor(ColorUtils.findColor(isLeft));
+        g.setColor(thisColor);
         g.fillOval((int) x-getSize(),(int) y-getSize(),getSize()*2,getSize()*2);
     }  // end of draw()
 }

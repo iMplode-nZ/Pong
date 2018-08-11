@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public class PongPanel extends JPanel implements Runnable {
@@ -25,24 +26,10 @@ public class PongPanel extends JPanel implements Runnable {
         setFocusable(true);
         requestFocus();    // the JPanel now has focus, so receives key events
         initKeyListener();
-        paddleAndBall.add(new Ball(pWidth, pHeight));
-        initPaddles(pWidth, pHeight, (Ball) (paddleAndBall.get(0)));
-        paddleAndBall.add(new Goal((Ball) paddleAndBall.get(0),pWidth/2-pWidth/4,pHeight/2, false));
-        paddleAndBall.add(new Goal((Ball) paddleAndBall.get(0),pWidth/2+pWidth/4,pHeight/2, true));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2-200, pHeight/2+200,-1, Color.green));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2-200, pHeight/2-200,-1, Color.green));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2+200, pHeight/2+200,-1, Color.green));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2+200, pHeight/2-200,-1, Color.green));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2-600, pHeight/2+200,-1, Color.green));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2-600, pHeight/2-200,-1, Color.green));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2+600, pHeight/2+200,-1, Color.green));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2+600, pHeight/2-200,-1, Color.green));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2, pHeight/2+250,1, Color.yellow));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2, pHeight/2-250,1, Color.yellow));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2-800, pHeight/2+250,1, Color.yellow));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2-800, pHeight/2-250,1, Color.yellow));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2+800, pHeight/2+250,1, Color.yellow));
-        paddleAndBall.add(new Obstacle((Ball) paddleAndBall.get(0), pWidth/2+800, pHeight/2-250,1, Color.yellow));
+
+        paddleAndBall.add(new Ball(pWidth/2, pHeight/2));
+        initPaddlesAndGoal(pWidth, pHeight, (Ball) (paddleAndBall.get(0)));
+
         new Thread(this).start();   // start updating the panel
     }
     private void initKeyListener()
@@ -60,7 +47,8 @@ public class PongPanel extends JPanel implements Runnable {
         });
     }  // end of initKeyListener()
 
-    public void initPaddles(int pWidth, int pHeight, Ball ball) {
+    public void initPaddlesAndGoal(int pWidth, int pHeight, Ball ball) {
+        paddleAndBall.add(new OutsideObstacle(ball, pWidth/2, pHeight/2 , -1.1, Color.BLACK, pHeight/2-ball.getSize()));
         ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment();
         Controller[] ca = ce.getControllers();
         if (ca.length == 0) {
@@ -83,16 +71,22 @@ public class PongPanel extends JPanel implements Runnable {
             System.out.println("Not enough found (" + mouseCount + "); 2 needed");
             System.exit(0);
         }
+        for(int i = mouseCount - 1; i >= 0; i--) {
+            int idx = mouseIDs[i];
 
-        // left finger tip
-        int idx = mouseIDs[0];
-        System.out.println("\nInitializing mouse ID " + idx + "...");
-        paddleAndBall.add(new Paddle(new RealMouse((Mouse)ca[idx]),true, pWidth, pHeight, ball));
+            System.out.println("\nInitializing mouse ID " + idx + "...");
+            //Wat
+            System.out.println(ca[i].getType());
+            if(ca[i].getType() == Controller.Type.KEYBOARD) {
+                mouseCount--;
+                continue;
+            }
+            double theta = 2 * Math.PI * i / mouseCount;
+            Point2D.Double position = PositionUtils.findPosition(pWidth, pHeight, 3 * pHeight / 8, theta);
+            paddleAndBall.add(new Paddle(new RealMouse((Mouse) ca[idx]), ColorUtils.findColor(theta), position.x, position.y, ball));
+            paddleAndBall.add(new Goal(ball, pWidth/2-(position.x-pWidth/2), pHeight/2-(position.y-pHeight/2),ColorUtils.findColor(theta)));
+        }
 
-        // right finger tip
-        idx = mouseIDs[1];
-        System.out.println("\nInitializing mouse ID " + idx + "...");
-        paddleAndBall.add(new Paddle(new RealMouse((Mouse)ca[idx]),false, pWidth, pHeight, ball));
     }  // end of initFingerTips()
 
     private void update()
