@@ -3,13 +3,14 @@ import java.awt.*;
 public class Goal extends GraphicsObject {
     int score = 0;
     Ball ball;
-
+    Paddle thisPaddle;
     Color c;
-    public Goal (Ball ball, double xPos, double yPos, Color whichColor) {
+    public Goal (Ball ball, Paddle whichPaddle) {
         this.ball = ball;
-        x = xPos;
-        y = yPos;
-        c = whichColor;
+        x = whichPaddle.x;
+        y = whichPaddle.y;
+        c = whichPaddle.thisColor;
+        thisPaddle = whichPaddle;
     }
     @Override
     public void draw(Graphics g) {
@@ -28,6 +29,7 @@ public class Goal extends GraphicsObject {
     public void update() {
         if (ball.getLocation().distance(getLocation()) < getSize() + ball.getSize()) {
             score++;
+            thisPaddle.thisSize += (getSize() - thisPaddle.thisSize)/4;
             ball.resetLocation();
         }
     }

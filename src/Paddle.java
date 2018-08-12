@@ -14,6 +14,7 @@ public class Paddle extends GraphicsObject {
     private double earY;
     Ball ball;
     Color thisColor;
+    int thisSize = 50;
     public Paddle(MouseInterface mc, Color whichColor, double xPos, double yPos, Ball ball)
     {
         mouseCtrl = mc;
@@ -26,7 +27,7 @@ public class Paddle extends GraphicsObject {
         thisColor = whichColor;
     }  // end of FingerTipController()
     public int getSize() {
-        return 50;
+        return thisSize;
     }
 
     public Point2D.Double getPrevLoc()

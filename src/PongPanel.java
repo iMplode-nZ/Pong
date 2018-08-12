@@ -12,7 +12,10 @@ import java.util.ArrayList;
 public class PongPanel extends JPanel implements Runnable {
     boolean isRunning = false;
     private static final int DELAY = 25;
-    ArrayList<GraphicsObject> paddleAndBall = new ArrayList<>();
+    ArrayList<Paddle> paddles = new ArrayList<>();
+    ArrayList<Goal> goals = new ArrayList<>();
+    Ball ball;
+    OutsideObstacle oO;
     public PongPanel() {
         // set panel/game dimensions to be those of the entire screen
         Dimension scrDim = Toolkit.getDefaultToolkit().getScreenSize();   // screen size
@@ -27,8 +30,8 @@ public class PongPanel extends JPanel implements Runnable {
         requestFocus();    // the JPanel now has focus, so receives key events
         initKeyListener();
 
-        paddleAndBall.add(new Ball(pWidth/2, pHeight/2));
-        initPaddlesAndGoal(pWidth, pHeight, (Ball) (paddleAndBall.get(0)));
+        ball = new Ball(pWidth/2, pHeight/2);
+        initPaddlesAndGoal(pWidth, pHeight);
 
         new Thread(this).start();   // start updating the panel
     }
@@ -47,8 +50,8 @@ public class PongPanel extends JPanel implements Runnable {
         });
     }  // end of initKeyListener()
 
-    public void initPaddlesAndGoal(int pWidth, int pHeight, Ball ball) {
-        paddleAndBall.add(new OutsideObstacle(ball, pWidth/2, pHeight/2 , -1.1, Color.BLACK, pHeight/2));
+    public void initPaddlesAndGoal(int pWidth, int pHeight) {
+        oO = new OutsideObstacle(ball, pWidth/2, pHeight/2 , -1.1, Color.BLACK, pHeight/2);
         ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment();
         Controller[] ca = ce.getControllers();
         if (ca.length == 0) {
@@ -83,8 +86,9 @@ public class PongPanel extends JPanel implements Runnable {
             }
             double theta = 2 * Math.PI * i / mouseCount;
             Point2D.Double position = PositionUtils.findPosition(pWidth, pHeight, 3 * pHeight / 8, theta);
-            paddleAndBall.add(new Paddle(new RealMouse((Mouse) ca[idx]), ColorUtils.findColor(theta), position.x, position.y, ball));
-            paddleAndBall.add(new Goal(ball, pWidth/2-(position.x-pWidth/2), pHeight/2-(position.y-pHeight/2),ColorUtils.findColor(theta)));
+            Paddle paddle = new Paddle(new RealMouse((Mouse) ca[idx]), ColorUtils.findColor(theta), position.x, position.y, ball);
+            paddles.add(paddle);
+            goals.add(new Goal(ball, paddle));
         }
 
     }  // end of initFingerTips()
@@ -93,16 +97,26 @@ public class PongPanel extends JPanel implements Runnable {
   /* update the finger tip controllers, and then determine how they
      affect the images on screen */ {
         // update the finger tip controllers
-        for(int i = 0; i < paddleAndBall.size(); i++) {
-            paddleAndBall.get(i).update();
+        for(int i = 0; i < paddles.size(); i++) {
+            paddles.get(i).update();
         }
+        for(int i = 0; i < goals.size(); i++) {
+            goals.get(i).update();
+        }
+        ball.update();
+        oO.update();
     }
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
-        for(int i = 0; i < paddleAndBall.size(); i++) {
-            paddleAndBall.get(i).draw(g);
+        for(int i = 0; i < paddles.size(); i++) {
+            paddles.get(i).draw(g);
         }
+        for(int i = 0; i < goals.size(); i++) {
+            goals.get(i).draw(g);
+        }
+        ball.draw(g);
+        oO.draw(g);
     } // end of paintComponent()
     public void run() {
         long duration;
