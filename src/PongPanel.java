@@ -51,7 +51,7 @@ public class PongPanel extends JPanel implements Runnable {
     }  // end of initKeyListener()
 
     public void initPaddlesAndGoal(int pWidth, int pHeight) {
-        oO = new OutsideObstacle(ball, pWidth/2, pHeight/2 , -1.1, Color.BLACK, pHeight/2);
+
         ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment();
         Controller[] ca = ce.getControllers();
         if (ca.length == 0) {
@@ -90,6 +90,7 @@ public class PongPanel extends JPanel implements Runnable {
             paddles.add(paddle);
             goals.add(new Goal(ball, paddle));
         }
+        oO = new OutsideObstacle(ball, pWidth/2, pHeight/2 , -1.1, Color.BLACK, pHeight/2,paddles);
 
     }  // end of initFingerTips()
 

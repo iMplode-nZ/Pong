@@ -1,18 +1,21 @@
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 public class OutsideObstacle extends GraphicsObject {
     public double change;
     Ball ball;
     Color color;
     int theSize;
-    public OutsideObstacle(Ball thisBall, double xPos, double yPos, double changer, Color whichColor, int size) {
+    ArrayList<Paddle> allPaddles;
+    public OutsideObstacle(Ball thisBall, double xPos, double yPos, double changer, Color whichColor, int size, ArrayList<Paddle> paddles) {
         x = xPos;
         y = yPos;
         ball = thisBall;
         change = changer;
         color = whichColor;
         theSize = size;
+        allPaddles = paddles;
     }
 
     @Override
@@ -27,7 +30,19 @@ public class OutsideObstacle extends GraphicsObject {
 
     @Override
     public void update() {
+        updatePositionOfPaddle();
         updateVelocityOfBall();
+    }
+    private void updatePositionOfPaddle() {
+        for(int i = 0; i < allPaddles.size(); i ++) {
+            Paddle p = allPaddles.get(i);
+            if (getLocation().distance(p.getLocation()) > getSize() - p.getSize()) {
+                double theta = Math.atan2((p.y - y),(p.x - x));
+                double r = getSize() - p.getSize();
+                p.x = r*Math.cos(theta)+x;
+                p.y = r*Math.sin(theta)+y;
+            }
+        }
     }
     private void updateVelocityOfBall() {
         if((getLocation().distance(ball.getLocation())<(getSize()-ball.getSize()))) {
